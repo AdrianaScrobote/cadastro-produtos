@@ -1,15 +1,24 @@
 import React from 'react'
 
+import ProdutoService from '../../app/produtoService'
+
+const estadoInicial = {
+    nome: '',
+    sku: '',
+    descricao: '',
+    preco: 0,
+    fornecedor: '',
+    sucesso: false
+}
+
 class CadastroProduto extends React.Component{
 
-    state = {
-        nome: '',
-        sku: '',
-        descricao: '',
-        preco: 0,
-        fornecedor: ''
-    }
+    state = estadoInicial
 
+    constructor(){
+        super()
+        this.service = new ProdutoService()
+    }
 
     onChange = (event) => {
         const valor = event.target.value
@@ -18,7 +27,24 @@ class CadastroProduto extends React.Component{
     }
 
     onSubmit = (event) => {
+        const produto = {
+            nome: this.state.name,
+            sku: this.state.sku,
+            descricao: this.state.descricao,
+            preco: this.state.preco,
+            fornecedor: this.state.fornecedor
+        }
+
+        this.service.salvar(produto)
+        this.limparCampos()
+        this.setState({sucesso: true})
+        console.log("Dados salvos com sucesso")
+
         console.log(this.state)
+    }
+
+    limparCampos = () => {
+        this.setState(estadoInicial)
     }
 
     render(){
@@ -29,6 +55,19 @@ class CadastroProduto extends React.Component{
                 </div>
 
                 <div className="card-body">
+
+                    { this.state.sucesso &&
+                        (
+                            <div class="alert alert-dismissible alert-success">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <strong>Ok!</strong> Dados salvos com sucesso.
+                            </div>
+                        )
+
+                    }
+
+                    
+                    
                     <div className="row">
                         <div className="col-md-6">
                             <div className="form-group">
@@ -99,7 +138,7 @@ class CadastroProduto extends React.Component{
                         </div>
 
                         <div className="col-md-1">
-                            <button className="btn btn-primary">Limpar</button>
+                            <button onClick={this.limparCampos} className="btn btn-primary">Limpar</button>
                         </div>
                     </div>
                 </div>
