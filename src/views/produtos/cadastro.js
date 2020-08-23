@@ -8,7 +8,8 @@ const estadoInicial = {
     descricao: '',
     preco: 0,
     fornecedor: '',
-    sucesso: false
+    sucesso: false,
+    erros: []
 }
 
 class CadastroProduto extends React.Component{
@@ -28,17 +29,23 @@ class CadastroProduto extends React.Component{
 
     onSubmit = (event) => {
         const produto = {
-            nome: this.state.name,
+            nome: this.state.nome,
             sku: this.state.sku,
             descricao: this.state.descricao,
             preco: this.state.preco,
             fornecedor: this.state.fornecedor
         }
+        try{
+            this.service.salvar(produto)
+            this.limparCampos()
+            this.setState({sucesso: true})
+            console.log("Dados salvos com sucesso")
+        }catch(e){
+            const errors = e.errors
+            this.setState({ erros: errors })
+        }
 
-        this.service.salvar(produto)
-        this.limparCampos()
-        this.setState({sucesso: true})
-        console.log("Dados salvos com sucesso")
+        
 
         console.log(this.state)
     }
@@ -62,6 +69,23 @@ class CadastroProduto extends React.Component{
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                                 <strong>Ok!</strong> Dados salvos com sucesso.
                             </div>
+                        )
+
+                    }
+
+                    { this.state.erros.length > 0 &&
+                        (
+                            this.state.erros.map(msg => {
+
+                                return(
+                                    <div class="alert alert-dismissible alert-danger">
+                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                        <strong>Erro!</strong> {msg}
+                                    </div>
+                                )
+                                
+                            })
+                            
                         )
 
                     }
